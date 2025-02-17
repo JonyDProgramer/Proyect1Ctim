@@ -10,7 +10,9 @@ void DrawGame() {};
 void UnloadGame() {};
 void UpdateDrawFrame() {};
 
-
+struct {
+	int val;
+};
 
 int main() {
 
@@ -23,6 +25,10 @@ int main() {
 	while (!WindowShouldClose()) { UpdateDrawFrame(); }
 
 	UnloadGame();
+
+	CloseWindow();
 	return 0;
 }
+
+
 
