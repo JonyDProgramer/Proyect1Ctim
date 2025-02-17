@@ -73,36 +73,37 @@ int main() {
 	return 0;
 }
 
-void InitGame() {
 
-	//init game variables
-
-	pause = false;
-	gameOver = false;
-	victory = false;
-	smooth = false;
-	activeEnemies = 10;
-	enemiesKill = 0;
-	score = 0;
-	alpha = 0;
-
-	//Init Player
-
-	player.rec.x = 20;
-	player.rec.y = 50;
-	player.rec.width = 20;
-	player.rec.height = 50;
-	player.speed.x = 5;
-	player.speed.y = 5;
-	player.color = RED;
-	
-	
-	// Init Enemie
-
-	for (int i = 0; i < 10; i++) {
-		
-	}
-}
+//void InitGame() {
+//
+//	//init game variables
+//
+//	pause = false;
+//	gameOver = false;
+//	victory = false;
+//	smooth = false;
+//	activeEnemies = 10;
+//	enemiesKill = 0;
+//	score = 0;
+//	alpha = 0;
+//
+//	//Init Player
+//
+//	player.rec.x = 20;
+//	player.rec.y = 50;
+//	player.rec.width = 20;
+//	player.rec.height = 50;
+//	player.speed.x = 5;
+//	player.speed.y = 5;
+//	player.color = RED;
+//	
+//	
+//	// Init Enemie
+//
+//	for (int i = 0; i < 10; i++) {
+//		
+//	}
+//}
 
 
 
