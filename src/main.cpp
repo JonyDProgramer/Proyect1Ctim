@@ -129,7 +129,7 @@ void InitGame() {
 
 void UpdateGame()
 {
-	if (!gameOver || !victory) {
+	if (!gameOver && !victory) {
 		if (IsKeyPressed('P')) { pause = !pause; }
 
 		if (!pause) {
@@ -209,7 +209,7 @@ void UpdateGame()
 				}
 			}
 
-			if (score >= 5000) { victory = true; }
+			if (score >= 1000) { victory = true; }
 		}
 	}
 	else {
@@ -226,7 +226,7 @@ void DrawGame()
 	BeginDrawing();
 	ClearBackground(WHITE);
 
-	if (!gameOver) {
+	if (!gameOver && !victory) {
 		DrawRectangleRec(player.rec, player.color);
 		
 
@@ -239,8 +239,13 @@ void DrawGame()
 		}
 		DrawText(TextFormat("%04i", score), 20, 20, 40, BLACK);
 
-		if (victory) DrawText("YOU WIN", screenWidth / 2 - MeasureText("YOU WIN", 40) / 2, screenHeight / 2 - 40, 40, BLACK);
+		
 		if (pause) DrawText("GAME PAUSED", screenWidth / 2 - MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, GRAY);
+	}
+	else if (victory) {
+		DrawText("YOU WIN", screenWidth / 2 - MeasureText("YOU WIN", 40) / 2, screenHeight / 2 - 40, 40, BLACK);
+		DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth() / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20) / 2, GetScreenHeight() / 2, 20, GRAY);
+		 
 	}
 	else DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth() / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20) / 2, GetScreenHeight() / 2 - 50, 20, GRAY);
 
