@@ -4,8 +4,8 @@ using namespace std;
 
 // defines
 
-#define screenWidth 800
-#define screenHeight 450
+#define screenWidth 840             
+#define screenHeight 1080         
 
 // structs
 
@@ -21,7 +21,6 @@ typedef  struct Player {
 	bool active;
 	Color color;
 };
-
 
 struct Shoot {
 	Rectangle rec;
@@ -49,7 +48,6 @@ static Player player = { 0 };
 static Enemy enemy[10] = { 0 };
 
 int shootRate = 0;
-float alpha = 0.0f;
 
 int activeEnemies = 0;
 int enemiesKill = 0;
@@ -85,14 +83,14 @@ void InitGame() {
 	activeEnemies = 10;
 	enemiesKill = 0;
 	score = 0;
-	alpha = 0;
+	
 
 	//Init Player
 
-	player.rec.x = 20;
-	player.rec.y = 50;
-	player.rec.width = 20;
-	player.rec.height = 50;
+	player.rec.x = 420;            
+	player.rec.y = 950;            
+	player.rec.width = 30;
+	player.rec.height = 35;
 	player.speed.x = 5;
 	player.speed.y = 5;
 	player.color = RED;
@@ -100,12 +98,12 @@ void InitGame() {
 	
 	// Init Enemie
 	for (int i = 0; i < 10; i++) {
-		enemy[i].rec.width = 10;
-		enemy[i].rec.height = 10;
-		enemy[i].rec.x = GetRandomValue(screenWidth,screenWidth + 1000);
-		enemy[i].rec.y = GetRandomValue(0, screenHeight - enemy[i].rec.height);
-		enemy[i].speed.x = 5;
-		enemy[i].speed.y = 5;
+		enemy[i].rec.width = 20;
+		enemy[i].rec.height = 20;
+		enemy[i].rec.x = GetRandomValue(0 , screenWidth);
+		enemy[i].rec.y = GetRandomValue(0 , screenHeight/2);
+		enemy[i].speed.x = 0;
+		enemy[i].speed.y = 0;
 		enemy[i].active = true;
 		enemy[i].color = BLACK;
 	}
@@ -114,12 +112,12 @@ void InitGame() {
 	// Initialize shoots
 	for (int i = 0; i < 50; i++)
 	{
-		shoot[i].rec.x = player.rec.x;
-		shoot[i].rec.y = player.rec.y + player.rec.height / 4;
-		shoot[i].rec.width = 10;
-		shoot[i].rec.height = 5;
-		shoot[i].speed.x = 7;
-		shoot[i].speed.y = 0;
+		shoot[i].rec.x = player.rec.x + player.rec.width / 2;
+		shoot[i].rec.y = player.rec.y;
+		shoot[i].rec.width = 5;
+		shoot[i].rec.height = 10;
+		shoot[i].speed.x = 0;
+		shoot[i].speed.y = -10;
 		shoot[i].active = false;
 		shoot[i].color = BLUE;
 	}
@@ -135,15 +133,10 @@ void UpdateGame()
 		if (!pause) {
 			
 			//Player movement
-			if (IsKeyDown('W')) { player.rec.y -= player.speed.y; }
-			if (IsKeyDown('A')) { player.rec.x -= player.speed.x; }
-			if (IsKeyDown('S')) { player.rec.y += player.speed.y; }
-			if (IsKeyDown('D')) { player.rec.x += player.speed.x; }
+			
+			if (IsKeyDown('A') || IsKeyDown(KEY_LEFT)) { player.rec.x -= player.speed.x; }
+			if (IsKeyDown('D') || IsKeyDown(KEY_RIGHT)) { player.rec.x += player.speed.x; }
 
-			if (IsKeyDown(KEY_UP)) { player.rec.y -= player.speed.y; }
-			if (IsKeyDown(KEY_LEFT)) { player.rec.x -= player.speed.x; }
-			if (IsKeyDown(KEY_DOWN)) { player.rec.y += player.speed.y; }
-			if (IsKeyDown(KEY_RIGHT)) { player.rec.x += player.speed.x; }
 
 			//Colision With enemy
 			for (int i = 0; i < activeEnemies; i++)
@@ -154,12 +147,12 @@ void UpdateGame()
 			//Enemy
 			for (int i = 0; i < activeEnemies; i++) {
 				if (enemy[i].active) {
-					enemy[i].rec.x -= enemy[i].speed.x;
+					enemy[i].rec.y += enemy[i].speed.y;
 				}
 				if (enemy[i].rec.x < 0)
 				{
-					enemy[i].rec.x = GetRandomValue(screenWidth, screenWidth + 1000);
-					enemy[i].rec.y = GetRandomValue(0, screenHeight - enemy[i].rec.height);
+					enemy[i].rec.x = GetRandomValue(0, screenWidth);
+					enemy[i].rec.y = GetRandomValue(0, screenHeight / 2);
 				}
 			}
 
@@ -176,8 +169,8 @@ void UpdateGame()
 
 				for (int i = 0; i < 50; i++) {
 					if (!shoot[i].active && shootRate % 20 == 0) {
-						shoot[i].rec.x = player.rec.x;
-						shoot[i].rec.y = player.rec.y + player.rec.height / 4;
+						shoot[i].rec.x = player.rec.x + player.rec.width / 2;
+						shoot[i].rec.y = player.rec.y;
 						shoot[i].active = true;
 						break;
 					}
@@ -187,7 +180,7 @@ void UpdateGame()
 
 			for (int i = 0; i < 50; i++) {
 				if (shoot[i].active) {
-					shoot[i].rec.x += shoot[i].speed.x;
+					shoot[i].rec.y += shoot[i].speed.y;
 
 					//collision with enemy
 					for (int j = 0; j < activeEnemies; j++) {
