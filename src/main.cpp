@@ -74,7 +74,7 @@ void InitGame() {
 	player.color = RED;
 
 	// load textures 
-	background = LoadTexture("textures/background.png");
+	background = LoadTexture("textures/stage1.png");
 }
 void UpdateGame() {
 	if (!gameOver && !victory) {
@@ -85,6 +85,13 @@ void UpdateGame() {
 
 			if (IsKeyDown('A') || IsKeyDown(KEY_LEFT)) { player.rec.x -= player.speed.x; }
 			if (IsKeyDown('D') || IsKeyDown(KEY_RIGHT)) { player.rec.x += player.speed.x; }
+
+
+			// collisions Wall
+
+			if (player.rec.x <= 0) { player.rec.x = 0; }
+			if (player.rec.x + player.rec.width >= screenWidth) { player.rec.x = screenWidth - player.rec.width; }
+
 
 			
 
