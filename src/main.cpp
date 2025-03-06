@@ -15,6 +15,12 @@ struct Player {
 	Color color;
 };
 
+struct Enemy {
+	Rectangle rec;
+	Vector2 speed;
+	Color color;
+};
+
 // functions
 
 void InitGame();
@@ -23,7 +29,7 @@ void DrawGame();
 void UnloadGame();
 void UpdateDrawFrame();
 
-// gloval variables
+// global variables
 
 bool gameOver = false;
 bool pause = false;
