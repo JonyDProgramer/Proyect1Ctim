@@ -102,9 +102,9 @@ void InitGame() {
 
 
 	// load textures 
-	background = LoadTexture("textures/level-background/stage1.png");
-	player_sprite = LoadTexture("textures/entities/player/player.png");
-	/*shoot_sprite = LoadTexture("textures/")*/
+	background = LoadTexture("Textures/level-background/stage1.png");
+	player_sprite = LoadTexture("Textures/entities/player/Fighter.png");
+	shoot_sprite = LoadTexture("Textures/entities/enemies/projectiles/disparoPlayer.png");
 }
 void UpdateGame() {
 	if (!gameOver && !victory) {
@@ -129,8 +129,8 @@ void UpdateGame() {
 
 				for (int i = 0; i < NUM_SHOOTS; i++) {
 					if (!shoot[i].active && shootRate % 35 == 0) {
-						shoot[i].rec.x = player.rec.x + player.rec.width / 2 - 2;
-						shoot[i].rec.y = player.rec.y - 10;
+						shoot[i].rec.x = player.rec.x + player.rec.width / 2;
+						shoot[i].rec.y = player.rec.y;
 						shoot[i].active = true;
 						break;
 					}
@@ -173,12 +173,20 @@ void DrawGame() {
 
 	DrawTextureEx(player_sprite, { player.rec.x, player.rec.y}, 0.0f, (player.rec.width /player_sprite.width, player.rec.height / player_sprite.height), WHITE);
 
+	
+	
+
 	if (!gameOver && !victory) {
 		/*DrawRectangleRec(player.rec, player.color);*/
 
+		//draw Shoots
+		 
 		for (int i = 0; i < NUM_SHOOTS; i++) {
 			if (shoot[i].active) {
-				DrawRectangleRec(shoot[i].rec, shoot[i].color);
+
+				DrawTextureEx(shoot_sprite, { shoot[i].rec.x, shoot[i].rec.y}, 0.0f, (shoot[i].rec.width / shoot_sprite.width, shoot[i].rec.height / shoot_sprite.height), WHITE);
+
+				/*DrawRectangleRec(shoot[i].rec, shoot[i].color);*/
 			}
 		}
 
@@ -204,6 +212,7 @@ void DrawGame() {
 void UnloadGame() {
 	UnloadTexture(background);
 	UnloadTexture(player_sprite);
+	UnloadTexture(shoot_sprite);
 }
 void UpdateDrawFrame() {
 	UpdateGame();
