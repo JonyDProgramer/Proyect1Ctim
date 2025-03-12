@@ -8,6 +8,7 @@ using namespace std;
 #define screenHeight 1080
 #define NUM_SHOOTS 50
 
+
 // structs
 
 struct Player {
@@ -51,6 +52,8 @@ int enemieskill = 0;
 
 Player player = { 0 };
 Shoots shoot[NUM_SHOOTS] = { 0 };
+Shoots enemyShoot[NUM_SHOOTS] = { 0 };
+Enemy enemy[10] = { 0 };
 
 // global textures
 
@@ -78,6 +81,9 @@ void InitGame() {
 	gameOver = false;
 	victory = false;
 	score = 0;
+	activeEnemies = 10;
+	enemieskill = 0;
+
 
 	//Player
 	player.rec.x = 420;
@@ -100,6 +106,36 @@ void InitGame() {
 		shoot[i].color = BLUE;
 	}
 
+	//Enemies
+	for (int i = 0; i < 10; i++) {
+		enemy[i].rec.width = 50;
+		enemy[i].rec.height = 55;
+		enemy[i].rec.x = GetRandomValue(0 + enemy[i].rec.width, 840 - enemy[i].rec.width);
+		enemy[i].rec.y = GetRandomValue(55, 400);
+		enemy[i].speed.x = 5;
+		enemy[i].speed.y = 5;
+		enemy[i].active = true;
+		enemy[i].color = RED;
+	}
+
+	// Enemies Shoot 
+
+	for (int i = 0; i < NUM_SHOOTS; i++) {
+
+		for (int j = 0; j < activeEnemies; j++) {
+
+			enemyShoot[i].rec.x = enemy[j].rec.x + enemy[j].rec.width / 2;
+			enemyShoot[i].rec.y = enemy[j].rec.y + enemy[j].rec.height;
+			enemyShoot[i].rec.width = 5;
+			enemyShoot[i].rec.height = 10;
+			enemyShoot[i].speed.x = 0;
+			enemyShoot[i].speed.y = 10;
+			enemyShoot[i].active = false;
+			enemyShoot[i].color = RED;
+
+		}
+		
+	}
 
 	// load textures 
 	background = LoadTexture("Textures/level-background/stage1.png");
@@ -108,6 +144,7 @@ void InitGame() {
 }
 void UpdateGame() {
 	if (!gameOver && !victory) {
+
 		if (IsKeyPressed('P')) { pause = !pause; }
 		if (!pause) {
 
@@ -137,17 +174,89 @@ void UpdateGame() {
 				}
 			}
 
+			//Shoot behavior
+
 			for (int i = 0; i < NUM_SHOOTS; i++) {
 				if (shoot[i].active) {
 					shoot[i].rec.y += shoot[i].speed.y;
 				}
+
+				//collision with enemy
+
+				for (int j = 0; j < activeEnemies; j++) {
+					if (enemy[j].active) {
+						if (CheckCollisionRecs(shoot[i].rec, enemy[j].rec)) {
+							shoot[i].active = false;
+							enemy[j].active = false;
+							enemieskill++;
+							score += 100;
+						}
+					}
+				}
+
+
 				if (shoot[i].rec.y < 0) {
 					shoot[i].active = false;
 				}
 			}
 
+			//Enemy on Enemy
 
-			
+			for (int i = 0; i < activeEnemies; i++) {
+				for (int j = 0; j < activeEnemies; j++) {
+					if (CheckCollisionRecs(enemy[i].rec, enemy[j].rec) && (i != j)) {
+						
+						enemy[j].rec.x = GetRandomValue(0 + enemy[i].rec.width, 840 - enemy[i].rec.width);
+						enemy[j].rec.y = GetRandomValue(10 + enemy[i].rec.height, 400);
+
+					}
+				}
+			}
+
+			//Enemy Shoot
+
+			if (IsKeyDown('Q')) {
+				shootRate += 5;
+
+				for (int i = 0; i < NUM_SHOOTS; i++) {
+					for (int j = 0; j < activeEnemies; j++) {
+
+						if (!enemyShoot[i].active && shootRate % 35 == 0) {
+							enemyShoot[i].rec.x = enemy[j].rec.x + enemy[j].rec.width / 2;
+							enemyShoot[i].rec.y = enemy[j].rec.y + enemy[j].rec.height;
+							enemyShoot[i].active = true;
+							break;
+						}
+
+					}
+
+				}
+			}
+
+			//Enemy Shoot behavior
+
+			for (int i = 0; i < NUM_SHOOTS; i++) {
+				if (enemyShoot[i].active) {
+					enemyShoot[i].rec.y += enemyShoot[i].speed.y;
+				}
+
+				//collision with player
+
+				if (CheckCollisionRecs(enemyShoot[i].rec, player.rec)) {
+					shoot[i].active = false;
+					gameOver = true;
+				}
+
+				if (enemyShoot[i].rec.y > 1080) {
+					enemyShoot[i].active = false;
+				}
+			}
+
+			//victory condition
+
+			if (score == 1000) {
+				victory = true;
+			}
 
 		}
 	}
@@ -164,32 +273,51 @@ void DrawGame() {
 	BeginDrawing();
 	ClearBackground(WHITE);
 
-	// draw background 
+	//draw background 
+
 	float scaleX = (float)screenWidth / background.width;
 	float scaleY = (float)screenHeight / background.height;
 	DrawTextureEx(background, { 0, 0 }, 0.0f, (scaleX, scaleY), WHITE);
 
+	//draw score
+	DrawText("score: ", 30, 55, 30, RED);
+	DrawText(TextFormat("%04i ", score), 130,55,30, RED);
+
+
 	//draw Player
 
-	DrawTextureEx(player_sprite, { player.rec.x, player.rec.y}, 0.0f, (player.rec.width /player_sprite.width, player.rec.height / player_sprite.height), WHITE);
-
-	
-	
+	DrawTextureEx(player_sprite, { player.rec.x, player.rec.y}, 0.0f, (player.rec.width/player_sprite.width, player.rec.height/player_sprite.height), WHITE);
 
 	if (!gameOver && !victory) {
 		/*DrawRectangleRec(player.rec, player.color);*/
+
+		//draw Enemies
+
+		for (int i = 0; i < activeEnemies; i++) {
+			if (enemy[i].active) {
+				DrawRectangleRec(enemy[i].rec, enemy[i].color);
+			}
+			
+		}
 
 		//draw Shoots
 		 
 		for (int i = 0; i < NUM_SHOOTS; i++) {
 			if (shoot[i].active) {
 
-				DrawTextureEx(shoot_sprite, { shoot[i].rec.x, shoot[i].rec.y}, 0.0f, (shoot[i].rec.width / shoot_sprite.width, shoot[i].rec.height / shoot_sprite.height), WHITE);
+				DrawTextureEx(shoot_sprite, { (shoot[i].rec.x)-15, (shoot[i].rec.y)-20}, 0.0f, ((shoot[i].rec.width / shoot_sprite.width)*4, (shoot[i].rec.height*2 / shoot_sprite.height)*4), WHITE);
 
 				/*DrawRectangleRec(shoot[i].rec, shoot[i].color);*/
 			}
 		}
 
+		//draw Enemy Shoots
+
+		for (int i = 0; i < NUM_SHOOTS; i++) {
+			if (enemyShoot[i].active) {
+				DrawRectangleRec(enemyShoot[i].rec, enemyShoot[i].color);
+			}
+		}
 
 
 
@@ -197,11 +325,12 @@ void DrawGame() {
 		if (pause) DrawText("GAME PAUSED", screenWidth / 2 - MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, RED);
 	}
 	else if (victory) {
-		DrawText("YOU WIN", screenWidth / 2 - MeasureText("YOU WIN", 40) / 2, screenHeight / 2 - 40, 40, BLACK);
-		DrawText("PRESS [ENTER] TO PLAY AGAIN", screenWidth / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN WIN", 20) / 2, screenHeight / 2 - 50, 20, RED);
+		DrawText("YOU WIN", screenWidth / 2 - MeasureText("YOU WIN", 40) / 2, 430, 40, RED);
+		DrawText("PRESS [ENTER] TO PLAY AGAIN", (screenWidth / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN WIN", 20) / 2)+15 , screenHeight / 2 - 50, 20, RED);
 	}
 	else {
-		DrawText("PRESS [ENTER] TO PLAY AGAIN", screenWidth / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN WIN", 20) / 2, screenHeight / 2 - 50, 20, RED);
+		DrawText("GAME OVER", screenWidth / 2 - MeasureText("GAME OVER", 40) / 2, 430, 40, RED);
+		DrawText("PRESS [ENTER] TO PLAY AGAIN", (screenWidth / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN WIN", 20) / 2) + 15, screenHeight / 2 - 50, 20, RED);
 	}
 
 	
