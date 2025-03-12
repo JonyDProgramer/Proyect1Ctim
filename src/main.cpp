@@ -62,6 +62,7 @@ Texture2D background;
 Texture2D player_sprite;
 Texture2D shoot_sprite;
 Texture2D level_sprite;
+Texture2D zako_enemy_sprite;
 
 
 
@@ -145,6 +146,7 @@ void InitGame() {
 	player_sprite = LoadTexture("Textures/entities/player/Fighter.png");
 	shoot_sprite = LoadTexture("Textures/entities/enemies/projectiles/disparoPlayer.png");
 	level_sprite = LoadTexture("Textures/items/stage_indicator.png");
+	zako_enemy_sprite = LoadTexture("Textures/entities/enemies/zako_dim1.png");
 }
 void UpdateGame() {
 	if (!gameOver && !victory) {
@@ -301,7 +303,8 @@ void DrawGame() {
 
 		for (int i = 0; i < activeEnemies; i++) {
 			if (enemy[i].active) {
-				DrawRectangleRec(enemy[i].rec, enemy[i].color);
+//				DrawRectangleRec(enemy[i].rec, enemy[i].color);
+				DrawTextureEx(zako_enemy_sprite, { enemy[i].rec.x, enemy[i].rec.y }, 0.0f, (enemy[i].rec.width / zako_enemy_sprite.width, enemy[i].rec.height / ((zako_enemy_sprite.height) / 2)), WHITE);
 			}
 			
 		}
