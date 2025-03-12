@@ -46,6 +46,7 @@ bool pause = false;
 bool victory = false;
 
 int score = 0;
+int highscore = 0;
 int shootRate = 0;
 int activeEnemies = 0;
 int enemieskill = 0;
@@ -60,6 +61,7 @@ Enemy enemy[10] = { 0 };
 Texture2D background;
 Texture2D player_sprite;
 Texture2D shoot_sprite;
+Texture2D level_sprite;
 
 
 
@@ -81,13 +83,14 @@ void InitGame() {
 	gameOver = false;
 	victory = false;
 	score = 0;
+	highscore = 0;
 	activeEnemies = 10;
 	enemieskill = 0;
 
 
 	//Player
 	player.rec.x = 420;
-	player.rec.y = 950;
+	player.rec.y = 900;
 	player.rec.width = 50;
 	player.rec.height = 55;
 	player.speed.x = 5;
@@ -111,7 +114,7 @@ void InitGame() {
 		enemy[i].rec.width = 50;
 		enemy[i].rec.height = 55;
 		enemy[i].rec.x = GetRandomValue(0 + enemy[i].rec.width, 840 - enemy[i].rec.width);
-		enemy[i].rec.y = GetRandomValue(55, 400);
+		enemy[i].rec.y = GetRandomValue(55 + enemy[i].rec.height, 400);
 		enemy[i].speed.x = 5;
 		enemy[i].speed.y = 5;
 		enemy[i].active = true;
@@ -141,6 +144,7 @@ void InitGame() {
 	background = LoadTexture("Textures/level-background/stage1.png");
 	player_sprite = LoadTexture("Textures/entities/player/Fighter.png");
 	shoot_sprite = LoadTexture("Textures/entities/enemies/projectiles/disparoPlayer.png");
+	level_sprite = LoadTexture("Textures/items/stage_indicator.png");
 }
 void UpdateGame() {
 	if (!gameOver && !victory) {
@@ -206,8 +210,8 @@ void UpdateGame() {
 				for (int j = 0; j < activeEnemies; j++) {
 					if (CheckCollisionRecs(enemy[i].rec, enemy[j].rec) && (i != j)) {
 						
-						enemy[j].rec.x = GetRandomValue(0 + enemy[i].rec.width, 840 - enemy[i].rec.width);
-						enemy[j].rec.y = GetRandomValue(10 + enemy[i].rec.height, 400);
+						enemy[i].rec.x = GetRandomValue(0 + enemy[i].rec.width, 840 - enemy[i].rec.width);
+						enemy[i].rec.y = GetRandomValue(55 + enemy[i].rec.height, 400);
 
 					}
 				}
@@ -280,9 +284,11 @@ void DrawGame() {
 	DrawTextureEx(background, { 0, 0 }, 0.0f, (scaleX, scaleY), WHITE);
 
 	//draw score
-	DrawText("score: ", 30, 55, 30, RED);
-	DrawText(TextFormat("%04i ", score), 130,55,30, RED);
+	DrawText("1UP ", 50 , 55, 30, YELLOW);
+	DrawText(TextFormat("%04i ", score), 50,80,30, WHITE);
 
+	DrawText("HIGH SCORE ", 340, 55, 30, RED);
+	DrawText(TextFormat("%04i ", highscore), 400, 80, 30, WHITE);
 
 	//draw Player
 
@@ -319,8 +325,16 @@ void DrawGame() {
 			}
 		}
 
+		// draw life
 
+		DrawTextureEx(player_sprite, { 55,990 }, 0.0f, (player.rec.width / player_sprite.width, player.rec.height / player_sprite.height), WHITE);
+		DrawTextureEx(player_sprite, { 0,990 }, 0.0f, (player.rec.width / player_sprite.width, player.rec.height / player_sprite.height), WHITE);
 
+		// draw level indicator
+
+		DrawTextureEx(level_sprite, { 800,1000 }, 0.0f, (50 / level_sprite.width, 55/ level_sprite.height), WHITE);
+
+		// pause 
 
 		if (pause) DrawText("GAME PAUSED", screenWidth / 2 - MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, RED);
 	}
@@ -342,6 +356,7 @@ void UnloadGame() {
 	UnloadTexture(background);
 	UnloadTexture(player_sprite);
 	UnloadTexture(shoot_sprite);
+	UnloadTexture(level_sprite);
 }
 void UpdateDrawFrame() {
 	UpdateGame();
