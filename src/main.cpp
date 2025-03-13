@@ -10,7 +10,6 @@ using namespace std;
 #define NUM_SHOOTS 50
 #define NUM_SHOOTS_ENEMY 50
 
-// TEst
 
 // structs
 
@@ -67,7 +66,8 @@ Texture2D player_sprite;
 Texture2D shoot_sprite;
 Texture2D level_sprite;
 Texture2D zako_enemy_sprite;
-
+Texture2D win_screen;
+Texture2D main_menu;
 
 
 int main() {
@@ -153,6 +153,8 @@ void InitGame() {
 	shoot_sprite = LoadTexture("Textures/entities/enemies/projectiles/disparoPlayer.png");
 	level_sprite = LoadTexture("Textures/items/stage_indicator.png");
 	zako_enemy_sprite = LoadTexture("Textures/entities/enemies/zako_dim1.png");
+	win_screen = LoadTexture("Textures/UI/win_condition.png");
+
 }
 void UpdateGame() {
 	if (!gameOver && !victory) {
@@ -348,8 +350,8 @@ void DrawGame() {
 		if (pause) DrawText("GAME PAUSED", screenWidth / 2 - MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, RED);
 	}
 	else if (victory) {
-		DrawText("YOU WIN", screenWidth / 2 - MeasureText("YOU WIN", 40) / 2, 430, 40, RED);
-		DrawText("PRESS [ENTER] TO PLAY AGAIN", (screenWidth / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN WIN", 20) / 2)+15 , screenHeight / 2 - 50, 20, RED);
+		DrawTextureEx(win_screen, { 0, 0 }, 0.0f, (scaleX, scaleY), WHITE);
+		DrawText("PRESS [ENTER] TO PLAY AGAIN", (screenWidth / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN WIN", 20) / 2)+15 , screenHeight - 100, 20, RED);
 	}
 	else {
 		DrawText("GAME OVER", screenWidth / 2 - MeasureText("GAME OVER", 40) / 2, 430, 40, RED);
