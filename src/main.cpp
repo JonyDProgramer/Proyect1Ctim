@@ -7,6 +7,7 @@ using namespace std;
 #define screenWidth 840
 #define screenHeight 1080
 #define NUM_SHOOTS 50
+#define NUM_SHOOTS_ENEMY 50
 
 
 // structs
@@ -172,7 +173,7 @@ void UpdateGame() {
 
 				for (int i = 0; i < NUM_SHOOTS; i++) {
 					if (!shoot[i].active && shootRate % 35 == 0) {
-						shoot[i].rec.x = player.rec.x + player.rec.width / 2;
+						shoot[i].rec.x = (player.rec.x + player.rec.width / 2) - 3;
 						shoot[i].rec.y = player.rec.y;
 						shoot[i].active = true;
 						break;
