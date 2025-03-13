@@ -95,6 +95,7 @@ void InitGame() {
 
 
 	//Player
+
 	player.rec.x = 420;
 	player.rec.y = 900;
 	player.rec.width = 50;
@@ -129,16 +130,16 @@ void InitGame() {
 
 	// Enemies Shoot 
 
-	for (int i = 0; i < NUM_SHOOTS_ENEMY; i++) {
+	for (int j = 0; j < activeEnemies; j++) {
 
-		for (int j = 0; j < activeEnemies; j++) {
+		for (int i = 0; i < NUM_SHOOTS_ENEMY; i++) {
 
 			enemyShoot[i].rec.x = enemy[j].rec.x + enemy[j].rec.width / 2;
 			enemyShoot[i].rec.y = enemy[j].rec.y + enemy[j].rec.height;
 			enemyShoot[i].rec.width = 5;
 			enemyShoot[i].rec.height = 10;
 			enemyShoot[i].speed.x = 0;
-			enemyShoot[i].speed.y = 10;
+			enemyShoot[i].speed.y = 2;
 			enemyShoot[i].active = false;
 			enemyShoot[i].color = RED;
 
@@ -226,42 +227,51 @@ void UpdateGame() {
 
 			//Enemy Shoot
 
-			if (IsKeyDown('Q')) {
-				shootRate2 += 5;
+			for (int i = 0; i < activeEnemies; i++) {
 
-				for (int i = 0; i < NUM_SHOOTS_ENEMY; i++) {
-					for (int j = 0; j < activeEnemies; j++) {
+				if (enemy[i].active) {
 
-						if (!enemyShoot[i].active && shootRate % 35 == 0) {
-							enemyShoot[i].rec.x = enemy[j].rec.x + enemy[j].rec.width / 2;
-							enemyShoot[i].rec.y = enemy[j].rec.y + enemy[j].rec.height;
-							enemyShoot[i].active = true;
-							break;
+					if (IsKeyDown('Q')) {
+						shootRate2 += 5;
+
+						for (int i = 0; i < NUM_SHOOTS_ENEMY; i++) {
+							for (int j = 0; j < activeEnemies; j++) {
+
+								if (!enemyShoot[i].active && shootRate2 % 35 == 0) {
+									enemyShoot[i].rec.x = enemy[j].rec.x + enemy[j].rec.width / 2;
+									enemyShoot[i].rec.y = enemy[j].rec.y + enemy[j].rec.height;
+									enemyShoot[i].active = true;
+									break;
+								}
+
+							}
+
 						}
-
 					}
 
+					//Enemy Shoot behavior
+
+					for (int i = 0; i < NUM_SHOOTS_ENEMY; i++) {
+						if (enemyShoot[i].active) {
+							enemyShoot[i].rec.y += enemyShoot[i].speed.y;
+						}
+
+						//collision with player
+
+						if (CheckCollisionRecs(enemyShoot[i].rec, player.rec)) {
+							enemyShoot[i].active = false;
+							gameOver = true;
+						}
+
+						if (enemyShoot[i].rec.y > 1080) {
+							enemyShoot[i].active = false;
+						}
+					}
 				}
+
 			}
 
-			//Enemy Shoot behavior
-
-			for (int i = 0; i < NUM_SHOOTS_ENEMY; i++) {
-				if (enemyShoot[i].active) {
-					enemyShoot[i].rec.y += enemyShoot[i].speed.y;
-				}
-
-				//collision with player
-
-				if (CheckCollisionRecs(enemyShoot[i].rec, player.rec)) {
-					shoot[i].active = false;
-					gameOver = true;
-				}
-
-				if (enemyShoot[i].rec.y > 1080) {
-					enemyShoot[i].active = false;
-				}
-			}
+			
 
 			//victory condition
 
