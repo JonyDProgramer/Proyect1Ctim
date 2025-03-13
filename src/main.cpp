@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include <iostream>
+
 using namespace std;
 
 //defines
@@ -49,12 +50,13 @@ bool victory = false;
 int score = 0;
 int highscore = 0;
 int shootRate = 0;
+int shootRate2 = 0;
 int activeEnemies = 0;
 int enemieskill = 0;
 
 Player player = { 0 };
 Shoots shoot[NUM_SHOOTS] = { 0 };
-Shoots enemyShoot[NUM_SHOOTS] = { 0 };
+Shoots enemyShoot[NUM_SHOOTS_ENEMY] = { 0 };
 Enemy enemy[10] = { 0 };
 
 // global textures
@@ -88,6 +90,8 @@ void InitGame() {
 	highscore = 0;
 	activeEnemies = 10;
 	enemieskill = 0;
+	shootRate = 0;
+    shootRate2 = 0;
 
 
 	//Player
@@ -125,7 +129,7 @@ void InitGame() {
 
 	// Enemies Shoot 
 
-	for (int i = 0; i < NUM_SHOOTS; i++) {
+	for (int i = 0; i < NUM_SHOOTS_ENEMY; i++) {
 
 		for (int j = 0; j < activeEnemies; j++) {
 
@@ -223,9 +227,9 @@ void UpdateGame() {
 			//Enemy Shoot
 
 			if (IsKeyDown('Q')) {
-				shootRate += 5;
+				shootRate2 += 5;
 
-				for (int i = 0; i < NUM_SHOOTS; i++) {
+				for (int i = 0; i < NUM_SHOOTS_ENEMY; i++) {
 					for (int j = 0; j < activeEnemies; j++) {
 
 						if (!enemyShoot[i].active && shootRate % 35 == 0) {
@@ -242,7 +246,7 @@ void UpdateGame() {
 
 			//Enemy Shoot behavior
 
-			for (int i = 0; i < NUM_SHOOTS; i++) {
+			for (int i = 0; i < NUM_SHOOTS_ENEMY; i++) {
 				if (enemyShoot[i].active) {
 					enemyShoot[i].rec.y += enemyShoot[i].speed.y;
 				}
