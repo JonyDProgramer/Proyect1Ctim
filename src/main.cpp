@@ -25,6 +25,7 @@ struct Enemy {
 	Vector2 speed;
 	bool active;
 	Color color;
+	bool move;
 };
 
 struct Shoots {
@@ -124,10 +125,11 @@ void InitGame() {
 		enemy[i].rec.height = 55;
 		enemy[i].rec.x = GetRandomValue(0 + enemy[i].rec.width, 840 - enemy[i].rec.width);
 		enemy[i].rec.y = GetRandomValue(55 + enemy[i].rec.height, 400);
-		enemy[i].speed.x = 5;
-		enemy[i].speed.y = 5;
+		enemy[i].speed.x = 0.25;
+		enemy[i].speed.y = 0.25;
 		enemy[i].active = true;
 		enemy[i].color = RED;
+		enemy[i].move = 1;
 	}
 
 	// Enemies Shoot 
@@ -225,6 +227,25 @@ void UpdateGame() {
 						enemy[i].rec.x = GetRandomValue(0 + enemy[i].rec.width, 840 - enemy[i].rec.width);
 						enemy[i].rec.y = GetRandomValue(55 + enemy[i].rec.height, 400);
 
+					}
+				}
+			}
+
+			//Enemy IA
+			// 1 = right && 0 = left.
+			for (int i = 0; i < activeEnemies; ++i) {
+				for (int j = 0; j < activeEnemies; ++j) {
+					if (enemy[i].move == 1 && enemy[i].rec.x < screenWidth - 72) {
+						enemy[i].rec.x += enemy[i].speed.x;
+					}
+					else if (enemy[i].move == 1 && enemy[i].rec.x >= screenWidth - 72) {
+						enemy[i].move = 0;
+					}
+					else if (enemy[i].move == 0 && enemy[i].rec.x > 0 + 16) {
+						enemy[i].rec.x -= enemy[i].speed.x;
+					}
+					else if (enemy[i].move == 0 && enemy[i].rec.x <= 0 + 16) {
+						enemy[i].move = 1;
 					}
 				}
 			}
