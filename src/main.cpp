@@ -25,7 +25,8 @@ struct Enemy {
 	Vector2 speed;
 	bool active;
 	Color color;
-	bool move;
+	int move;
+	int cnt;
 };
 
 struct Enemy_Shoots {
@@ -41,7 +42,6 @@ struct Shoots {
 	bool active;
 	Color color;
 };
-
 
 // functions
 
@@ -65,6 +65,7 @@ int activeEnemies = 0;
 int enemieskill = 0;
 
 
+
 Player player = { 0 };
 Shoots shoot[NUM_SHOOTS] = { 0 };
 Enemy enemy[10] = { 0 };
@@ -79,7 +80,6 @@ Texture2D level_sprite;
 Texture2D zako_enemy_sprite;
 Texture2D win_screen;
 Texture2D main_menu;
-Texture2D explosion;
 
 
 int main() {
@@ -95,7 +95,7 @@ int main() {
 
 void InitGame() {
 	//global variables
-	
+
 	pause = false;
 	gameOver = false;
 	victory = false;
@@ -104,8 +104,7 @@ void InitGame() {
 	activeEnemies = 10;
 	enemieskill = 0;
 	shootRate = 0;
-    shootRate2 = 0;
-	
+	shootRate2 = 0;
 
 
 	//Player
@@ -120,7 +119,7 @@ void InitGame() {
 
 	//Shoot
 	for (int i = 0; i < NUM_SHOOTS; i++) {
-		shoot[i].rec.x = player.rec.x + player.rec.width/2;
+		shoot[i].rec.x = player.rec.x + player.rec.width / 2;
 		shoot[i].rec.y = player.rec.y;
 		shoot[i].rec.width = 5;
 		shoot[i].rec.height = 10;
@@ -131,16 +130,17 @@ void InitGame() {
 	}
 
 	//Enemies
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < activeEnemies; i++) {
 		enemy[i].rec.width = 50;
 		enemy[i].rec.height = 55;
 		enemy[i].rec.x = GetRandomValue(0 + enemy[i].rec.width, 840 - enemy[i].rec.width);
 		enemy[i].rec.y = GetRandomValue(55 + enemy[i].rec.height, 400);
-		enemy[i].speed.x = 0.3;
-		enemy[i].speed.y = 0.3;
+		enemy[i].speed.x = 1;
+		enemy[i].speed.y = 0;
 		enemy[i].active = true;
 		enemy[i].color = RED;
-		enemy[i].move = 1;
+		enemy[i].move = GetRandomValue(0, 1);
+		enemy[i].cnt = 0;
 	}
 
 	//Enemy Shoot
@@ -157,8 +157,8 @@ void InitGame() {
 			e_shoot[i].color = RED;
 		}
 	}
-	
-	
+
+
 
 	// load textures 
 	background = LoadTexture("Textures/level-background/stage1.png");
@@ -167,7 +167,6 @@ void InitGame() {
 	level_sprite = LoadTexture("Textures/items/stage_indicator.png");
 	zako_enemy_sprite = LoadTexture("Textures/entities/enemies/zako_dim1.png");
 	win_screen = LoadTexture("Textures/UI/win_condition.png");
-	explosion = LoadTexture("Textures/entities/player/explosion.png");
 
 }
 void UpdateGame() {
@@ -212,7 +211,7 @@ void UpdateGame() {
 				//collision with enemy
 
 				for (int j = 0; j < activeEnemies; j++) {
-					if (enemy[j].active) {
+					if (enemy[j].active && shoot[i].active) {
 						if (CheckCollisionRecs(shoot[i].rec, enemy[j].rec)) {
 							shoot[i].active = false;
 							enemy[j].active = false;
@@ -228,40 +227,39 @@ void UpdateGame() {
 				}
 			}
 
-			//Enemy on Enemy
 
+
+			//Enemy IA
+			// 1 = right && 0 = left.
 			for (int i = 0; i < activeEnemies; i++) {
-				for (int j = 0; j < activeEnemies; j++) {
-					if (CheckCollisionRecs(enemy[i].rec, enemy[j].rec) && (i != j)) {
-						
-						enemy[i].rec.x = GetRandomValue(0 + enemy[i].rec.width, 840 - enemy[i].rec.width);
-						enemy[i].rec.y = GetRandomValue(55 + enemy[i].rec.height, 400);
-
+				if (enemy[i].active) {
+					if (enemy[i].move == 1) {
+						enemy[i].rec.x += enemy[i].speed.x;
 					}
+					else if (enemy[i].move == 0) {
+						enemy[i].rec.x -= enemy[i].speed.x;
+					}
+
 				}
 			}
 
-			//Enemy IA		1 = right && 0 = left.
-			for (int i = 0; i < activeEnemies; ++i) {
-					if (enemy[i].move == 1 && enemy[i].rec.x < screenWidth - 72) {
-						enemy[i].rec.x += enemy[i].speed.x;
-					}
-					else if (enemy[i].move == 1 && enemy[i].rec.x >= screenWidth - 72) {
-						enemy[i].move = 0;
-					}
-					else if (enemy[i].move == 0 && enemy[i].rec.x > 0 + 16) {
-						enemy[i].rec.x -= enemy[i].speed.x;
-					}
-					else if (enemy[i].move == 0 && enemy[i].rec.x <= 0 + 16) {
-						enemy[i].move = 1;
-					}
+			//colission pared
+
+			for (int i = 0; i < activeEnemies; i++) {
+				if (enemy[i].active && enemy[i].rec.x < 0) {
+					enemy[i].move = 1;
+				}
+				else if (enemy[i].active && enemy[i].rec.x > 800) {
+					enemy[i].move = 0;
+				}
 			}
 
-			//Enemy Shoot
+			//Enemy shoot
+
 			for (int i = 0; i < activeEnemies; i++) {
+				i = GetRandomValue(0, activeEnemies);
 				if (enemy[i].active) {
 					shootRate2 += 5;
-					
 
 					for (int j = 0; j < NUM_ENEMY_SHOOTS; j++) {
 						if (!e_shoot[i].active && shootRate2 % 55 == 0) {
@@ -275,7 +273,7 @@ void UpdateGame() {
 			}
 
 			//Enemy Shoot behavior
-			
+
 			for (int i = 0; i < NUM_ENEMY_SHOOTS; i++) {
 				if (e_shoot[i].active) {
 					e_shoot[i].rec.y += e_shoot[i].speed.y;
@@ -294,7 +292,7 @@ void UpdateGame() {
 					e_shoot[i].active = false;
 				}
 			}
-			
+
 
 			//victory condition
 
@@ -324,15 +322,15 @@ void DrawGame() {
 	DrawTextureEx(background, { 0, 0 }, 0.0f, (scaleX, scaleY), WHITE);
 
 	//draw score
-	DrawText("1UP ", 50 , 55, 30, YELLOW);
-	DrawText(TextFormat("%04i ", score), 50,80,30, WHITE);
+	DrawText("1UP ", 50, 55, 30, YELLOW);
+	DrawText(TextFormat("%04i ", score), 50, 80, 30, WHITE);
 
 	DrawText("HIGH SCORE ", 340, 55, 30, RED);
 	DrawText(TextFormat("%04i ", highscore), 400, 80, 30, WHITE);
 
 	//draw Player
 
-	DrawTextureEx(player_sprite, { player.rec.x, player.rec.y}, 0.0f, (player.rec.width/player_sprite.width, player.rec.height/player_sprite.height), WHITE);
+	DrawTextureEx(player_sprite, { player.rec.x, player.rec.y }, 0.0f, (player.rec.width / player_sprite.width, player.rec.height / player_sprite.height), WHITE);
 
 	if (!gameOver && !victory) {
 		/*DrawRectangleRec(player.rec, player.color);*/
@@ -341,18 +339,18 @@ void DrawGame() {
 
 		for (int i = 0; i < activeEnemies; i++) {
 			if (enemy[i].active) {
-//				DrawRectangleRec(enemy[i].rec, enemy[i].color);
+				/*DrawRectangleRec(enemy[i].rec, enemy[i].color);*/
 				DrawTextureEx(zako_enemy_sprite, { enemy[i].rec.x, enemy[i].rec.y }, 0.0f, (enemy[i].rec.width / zako_enemy_sprite.width, enemy[i].rec.height / ((zako_enemy_sprite.height) / 2)), WHITE);
 			}
-			
+
 		}
 
 		//draw Shoots
-		 
+
 		for (int i = 0; i < NUM_SHOOTS; i++) {
 			if (shoot[i].active) {
 
-				DrawTextureEx(shoot_sprite, { (shoot[i].rec.x)-15, (shoot[i].rec.y)-20}, 0.0f, ((shoot[i].rec.width / shoot_sprite.width)*4, (shoot[i].rec.height*2 / shoot_sprite.height)*4), WHITE);
+				DrawTextureEx(shoot_sprite, { (shoot[i].rec.x) - 15, (shoot[i].rec.y) - 20 }, 0.0f, ((shoot[i].rec.width / shoot_sprite.width) * 4, (shoot[i].rec.height * 2 / shoot_sprite.height) * 4), WHITE);
 
 				/*DrawRectangleRec(shoot[i].rec, shoot[i].color);*/
 			}
@@ -366,7 +364,7 @@ void DrawGame() {
 			}
 		}
 
-		
+
 
 		// draw life
 
@@ -375,7 +373,7 @@ void DrawGame() {
 
 		// draw level indicator
 
-		DrawTextureEx(level_sprite, { 800,1000 }, 0.0f, (50 / level_sprite.width, 55/ level_sprite.height), WHITE);
+		DrawTextureEx(level_sprite, { 800,1000 }, 0.0f, (50 / level_sprite.width, 55 / level_sprite.height), WHITE);
 
 		// pause 
 
@@ -383,14 +381,14 @@ void DrawGame() {
 	}
 	else if (victory) {
 		DrawTextureEx(win_screen, { 0, 0 }, 0.0f, (scaleX, scaleY), WHITE);
-		DrawText("PRESS [ENTER] TO PLAY AGAIN", (screenWidth / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN WIN", 20) / 2)+15 , screenHeight - 100, 20, RED);
+		DrawText("PRESS [ENTER] TO PLAY AGAIN", (screenWidth / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN WIN", 20) / 2) + 15, screenHeight - 100, 20, RED);
 	}
 	else {
 		DrawText("GAME OVER", screenWidth / 2 - MeasureText("GAME OVER", 40) / 2, 430, 40, RED);
 		DrawText("PRESS [ENTER] TO PLAY AGAIN", (screenWidth / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN WIN", 20) / 2) + 15, screenHeight / 2 - 50, 20, RED);
 	}
 
-	
+
 
 
 	EndDrawing();
@@ -400,10 +398,8 @@ void UnloadGame() {
 	UnloadTexture(player_sprite);
 	UnloadTexture(shoot_sprite);
 	UnloadTexture(level_sprite);
-	UnloadTexture(zako_enemy_sprite);
 	UnloadTexture(win_screen);
-	UnloadTexture(main_menu);
-	UnloadTexture(explosion);
+	UnloadTexture(zako_enemy_sprite);
 }
 void UpdateDrawFrame() {
 	UpdateGame();
