@@ -400,6 +400,10 @@ void UnloadGame() {
 	UnloadTexture(player_sprite);
 	UnloadTexture(shoot_sprite);
 	UnloadTexture(level_sprite);
+	UnloadTexture(zako_enemy_sprite);
+	UnloadTexture(win_screen);
+	UnloadTexture(main_menu);
+	UnloadTexture(explosion);
 }
 void UpdateDrawFrame() {
 	UpdateGame();
