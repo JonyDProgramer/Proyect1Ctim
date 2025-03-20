@@ -25,7 +25,8 @@ struct Enemy {
 	Vector2 speed;
 	bool active;
 	Color color;
-	bool move;
+	int move;
+	int cnt;
 };
 
 struct Enemy_Shoots {
@@ -62,6 +63,7 @@ int shootRate = 0;
 int shootRate2 = 0;
 int activeEnemies = 0;
 int enemieskill = 0;
+
 
 
 Player player = { 0 };
@@ -103,7 +105,6 @@ void InitGame() {
 	enemieskill = 0;
 	shootRate = 0;
     shootRate2 = 0;
-	
 
 
 	//Player
@@ -129,16 +130,17 @@ void InitGame() {
 	}
 
 	//Enemies
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < activeEnemies; i++) {
 		enemy[i].rec.width = 50;
 		enemy[i].rec.height = 55;
 		enemy[i].rec.x = GetRandomValue(0 + enemy[i].rec.width, 840 - enemy[i].rec.width);
 		enemy[i].rec.y = GetRandomValue(55 + enemy[i].rec.height, 400);
-		enemy[i].speed.x = 0.25;
-		enemy[i].speed.y = 0.25;
+		enemy[i].speed.x = 1;
+		enemy[i].speed.y = 0;
 		enemy[i].active = true;
 		enemy[i].color = RED;
-		enemy[i].move = 1;
+		enemy[i].move = GetRandomValue(0,1);
+		enemy[i].cnt = 0;
 	}
 
 	//Enemy Shoot
@@ -209,7 +211,7 @@ void UpdateGame() {
 				//collision with enemy
 
 				for (int j = 0; j < activeEnemies; j++) {
-					if (enemy[j].active) {
+					if (enemy[j].active && shoot[i].active) {
 						if (CheckCollisionRecs(shoot[i].rec, enemy[j].rec)) {
 							shoot[i].active = false;
 							enemy[j].active = false;
@@ -225,45 +227,40 @@ void UpdateGame() {
 				}
 			}
 
-			//Enemy on Enemy
-
-			for (int i = 0; i < activeEnemies; i++) {
-				for (int j = 0; j < activeEnemies; j++) {
-					if (CheckCollisionRecs(enemy[i].rec, enemy[j].rec) && (i != j)) {
-						
-						enemy[i].rec.x = GetRandomValue(0 + enemy[i].rec.width, 840 - enemy[i].rec.width);
-						enemy[i].rec.y = GetRandomValue(55 + enemy[i].rec.height, 400);
-
-					}
-				}
-			}
+		
 
 			//Enemy IA
 			// 1 = right && 0 = left.
-			for (int i = 0; i < activeEnemies; ++i) {
-				for (int j = 0; j < activeEnemies; ++j) {
-					if (enemy[i].move == 1 && enemy[i].rec.x < screenWidth - 72) {
+			for (int i = 0; i < activeEnemies; i++) {
+				if (enemy[i].active) {
+					if (enemy[i].move == 1) {
 						enemy[i].rec.x += enemy[i].speed.x;
 					}
-					else if (enemy[i].move == 1 && enemy[i].rec.x >= screenWidth - 72) {
-						enemy[i].move = 0;
-					}
-					else if (enemy[i].move == 0 && enemy[i].rec.x > 0 + 16) {
+					else if (enemy[i].move == 0) {
 						enemy[i].rec.x -= enemy[i].speed.x;
 					}
-					else if (enemy[i].move == 0 && enemy[i].rec.x <= 0 + 16) {
-						enemy[i].move = 1;
-					}
+				
+				}
+			}
+
+			//colission pared
+
+			for (int i = 0; i < activeEnemies; i++) {
+				if (enemy[i].active && enemy[i].rec.x < 0) {
+					enemy[i].move = 1;
+				}
+				else if (enemy[i].active && enemy[i].rec.x > 800) {
+					enemy[i].move = 0;
 				}
 			}
 
 			//Enemy shoot
 
 			for (int i = 0; i < activeEnemies; i++) {
+				i = GetRandomValue(0, activeEnemies);
 				if (enemy[i].active) {
 					shootRate2 += 5;
 					
-
 					for (int j = 0; j < NUM_ENEMY_SHOOTS; j++) {
 						if (!e_shoot[i].active && shootRate2 % 55 == 0) {
 							e_shoot[i].rec.x = enemy[i].rec.x + enemy[i].rec.width / 2;
@@ -342,7 +339,7 @@ void DrawGame() {
 
 		for (int i = 0; i < activeEnemies; i++) {
 			if (enemy[i].active) {
-//				DrawRectangleRec(enemy[i].rec, enemy[i].color);
+				/*DrawRectangleRec(enemy[i].rec, enemy[i].color);*/
 				DrawTextureEx(zako_enemy_sprite, { enemy[i].rec.x, enemy[i].rec.y }, 0.0f, (enemy[i].rec.width / zako_enemy_sprite.width, enemy[i].rec.height / ((zako_enemy_sprite.height) / 2)), WHITE);
 			}
 			
@@ -401,6 +398,8 @@ void UnloadGame() {
 	UnloadTexture(player_sprite);
 	UnloadTexture(shoot_sprite);
 	UnloadTexture(level_sprite);
+	UnloadTexture(win_screen);
+	UnloadTexture(zako_enemy_sprite);
 }
 void UpdateDrawFrame() {
 	UpdateGame();
