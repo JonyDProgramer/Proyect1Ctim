@@ -42,6 +42,7 @@ struct Shoots {
 	Color color;
 };
 
+
 // functions
 
 void InitGame();
@@ -78,6 +79,7 @@ Texture2D level_sprite;
 Texture2D zako_enemy_sprite;
 Texture2D win_screen;
 Texture2D main_menu;
+Texture2D explosion;
 
 
 int main() {
@@ -134,8 +136,8 @@ void InitGame() {
 		enemy[i].rec.height = 55;
 		enemy[i].rec.x = GetRandomValue(0 + enemy[i].rec.width, 840 - enemy[i].rec.width);
 		enemy[i].rec.y = GetRandomValue(55 + enemy[i].rec.height, 400);
-		enemy[i].speed.x = 0.25;
-		enemy[i].speed.y = 0.25;
+		enemy[i].speed.x = 0.3;
+		enemy[i].speed.y = 0.3;
 		enemy[i].active = true;
 		enemy[i].color = RED;
 		enemy[i].move = 1;
@@ -165,6 +167,7 @@ void InitGame() {
 	level_sprite = LoadTexture("Textures/items/stage_indicator.png");
 	zako_enemy_sprite = LoadTexture("Textures/entities/enemies/zako_dim1.png");
 	win_screen = LoadTexture("Textures/UI/win_condition.png");
+	explosion = LoadTexture("Textures/entities/player/explosion.png");
 
 }
 void UpdateGame() {
@@ -238,10 +241,8 @@ void UpdateGame() {
 				}
 			}
 
-			//Enemy IA
-			// 1 = right && 0 = left.
+			//Enemy IA		1 = right && 0 = left.
 			for (int i = 0; i < activeEnemies; ++i) {
-				for (int j = 0; j < activeEnemies; ++j) {
 					if (enemy[i].move == 1 && enemy[i].rec.x < screenWidth - 72) {
 						enemy[i].rec.x += enemy[i].speed.x;
 					}
@@ -254,11 +255,9 @@ void UpdateGame() {
 					else if (enemy[i].move == 0 && enemy[i].rec.x <= 0 + 16) {
 						enemy[i].move = 1;
 					}
-				}
 			}
 
-			//Enemy shoot
-
+			//Enemy Shoot
 			for (int i = 0; i < activeEnemies; i++) {
 				if (enemy[i].active) {
 					shootRate2 += 5;
