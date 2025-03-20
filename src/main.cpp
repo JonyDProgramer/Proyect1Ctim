@@ -9,7 +9,7 @@ using namespace std;
 #define screenWidth 840
 #define screenHeight 1080
 #define NUM_SHOOTS 50
-#define NUM_SHOOTS_ENEMY 50
+#define NUM_ENEMY_SHOOTS 50
 
 
 // structs
@@ -26,6 +26,13 @@ struct Enemy {
 	bool active;
 	Color color;
 	bool move;
+};
+
+struct Enemy_Shoots {
+	Rectangle rec;
+	Vector2 speed;
+	bool active;
+	Color color;
 };
 
 struct Shoots {
@@ -56,10 +63,11 @@ int shootRate2 = 0;
 int activeEnemies = 0;
 int enemieskill = 0;
 
+
 Player player = { 0 };
 Shoots shoot[NUM_SHOOTS] = { 0 };
-Shoots enemyShoot[NUM_SHOOTS_ENEMY] = { 0 };
 Enemy enemy[10] = { 0 };
+Enemy_Shoots e_shoot[NUM_ENEMY_SHOOTS] = { 0 };
 
 // global textures
 
@@ -95,6 +103,7 @@ void InitGame() {
 	enemieskill = 0;
 	shootRate = 0;
     shootRate2 = 0;
+	
 
 
 	//Player
@@ -132,24 +141,22 @@ void InitGame() {
 		enemy[i].move = 1;
 	}
 
-	// Enemies Shoot 
+	//Enemy Shoot
 
-	for (int j = 0; j < activeEnemies; j++) {
-
-		for (int i = 0; i < NUM_SHOOTS_ENEMY; i++) {
-
-			enemyShoot[i].rec.x = enemy[j].rec.x + enemy[j].rec.width / 2;
-			enemyShoot[i].rec.y = enemy[j].rec.y + enemy[j].rec.height;
-			enemyShoot[i].rec.width = 5;
-			enemyShoot[i].rec.height = 10;
-			enemyShoot[i].speed.x = 0;
-			enemyShoot[i].speed.y = 2;
-			enemyShoot[i].active = false;
-			enemyShoot[i].color = RED;
-
+	for (int i = 0; i < NUM_ENEMY_SHOOTS; i++) {
+		for (int j = 0; j < activeEnemies; j++) {
+			e_shoot[i].rec.x = enemy[j].rec.x + enemy[j].rec.width / 2;
+			e_shoot[i].rec.y = enemy[j].rec.y + enemy[j].rec.height;
+			e_shoot[i].rec.width = 5;
+			e_shoot[i].rec.height = 10;
+			e_shoot[i].speed.x = 0;
+			e_shoot[i].speed.y = +10;
+			e_shoot[i].active = false;
+			e_shoot[i].color = RED;
 		}
-		
 	}
+	
+	
 
 	// load textures 
 	background = LoadTexture("Textures/level-background/stage1.png");
@@ -250,52 +257,44 @@ void UpdateGame() {
 				}
 			}
 
-			//Enemy Shoot
+			//Enemy shoot
 
 			for (int i = 0; i < activeEnemies; i++) {
-
 				if (enemy[i].active) {
+					shootRate2 += 5;
+					
 
-					if (IsKeyDown('Q')) {
-						shootRate2 += 5;
-
-						for (int i = 0; i < NUM_SHOOTS_ENEMY; i++) {
-							for (int j = 0; j < activeEnemies; j++) {
-
-								if (!enemyShoot[i].active && shootRate2 % 35 == 0) {
-									enemyShoot[i].rec.x = enemy[j].rec.x + enemy[j].rec.width / 2;
-									enemyShoot[i].rec.y = enemy[j].rec.y + enemy[j].rec.height;
-									enemyShoot[i].active = true;
-									break;
-								}
-
-							}
-
-						}
-					}
-
-					//Enemy Shoot behavior
-
-					for (int i = 0; i < NUM_SHOOTS_ENEMY; i++) {
-						if (enemyShoot[i].active) {
-							enemyShoot[i].rec.y += enemyShoot[i].speed.y;
-						}
-
-						//collision with player
-
-						if (CheckCollisionRecs(enemyShoot[i].rec, player.rec)) {
-							enemyShoot[i].active = false;
-							gameOver = true;
-						}
-
-						if (enemyShoot[i].rec.y > 1080) {
-							enemyShoot[i].active = false;
+					for (int j = 0; j < NUM_ENEMY_SHOOTS; j++) {
+						if (!e_shoot[i].active && shootRate2 % 55 == 0) {
+							e_shoot[i].rec.x = enemy[i].rec.x + enemy[i].rec.width / 2;
+							e_shoot[i].rec.y = enemy[i].rec.y + enemy[i].rec.height;
+							e_shoot[i].active = true;
+							break;
 						}
 					}
 				}
-
 			}
 
+			//Enemy Shoot behavior
+			
+			for (int i = 0; i < NUM_ENEMY_SHOOTS; i++) {
+				if (e_shoot[i].active) {
+					e_shoot[i].rec.y += e_shoot[i].speed.y;
+				}
+
+				//collision with player
+
+				if (CheckCollisionRecs(e_shoot[i].rec, player.rec)) {
+					e_shoot[i].active = false;
+					gameOver = true;
+				}
+
+				//shoot out of the screen
+
+				if (e_shoot[i].rec.y > screenHeight) {
+					e_shoot[i].active = false;
+				}
+			}
 			
 
 			//victory condition
@@ -360,13 +359,15 @@ void DrawGame() {
 			}
 		}
 
-		//draw Enemy Shoots
+		//draw enemy shoots
 
-		for (int i = 0; i < NUM_SHOOTS; i++) {
-			if (enemyShoot[i].active) {
-				DrawRectangleRec(enemyShoot[i].rec, enemyShoot[i].color);
+		for (int i = 0; i < NUM_ENEMY_SHOOTS; i++) {
+			if (e_shoot[i].active) {
+				DrawRectangleRec(e_shoot[i].rec, e_shoot[i].color);
 			}
 		}
+
+		
 
 		// draw life
 
