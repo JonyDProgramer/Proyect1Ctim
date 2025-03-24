@@ -43,6 +43,7 @@ struct Shoots {
 	Color color;
 };
 
+
 // functions
 
 void InitGame();
@@ -56,6 +57,7 @@ void UpdateDrawFrame();
 bool gameOver = false;
 bool pause = false;
 bool victory = false;
+bool main_menu = true;
 
 int score = 0;
 int highscore = 0;
@@ -64,7 +66,7 @@ int shootRate2 = 0;
 int activeEnemies = 0;
 int enemieskill = 0;
 
-
+const char* main_menu_text_start = "TO START PRESS < ENTER >!";
 
 Player player = { 0 };
 Shoots shoot[NUM_SHOOTS] = { 0 };
@@ -79,8 +81,10 @@ Texture2D shoot_sprite;
 Texture2D level_sprite;
 Texture2D zako_enemy_sprite;
 Texture2D win_screen;
-Texture2D main_menu;
+Texture2D main_menu_background;
+Texture2D main_menu_logo;
 
+Font customFont;
 
 int main() {
 
@@ -99,6 +103,7 @@ void InitGame() {
 	pause = false;
 	gameOver = false;
 	victory = false;
+	main_menu = true;
 	score = 0;
 	highscore = 0;
 	activeEnemies = 10;
@@ -167,10 +172,23 @@ void InitGame() {
 	level_sprite = LoadTexture("Textures/items/stage_indicator.png");
 	zako_enemy_sprite = LoadTexture("Textures/entities/enemies/zako_dim1.png");
 	win_screen = LoadTexture("Textures/UI/win_condition.png");
+	main_menu_background = LoadTexture("Textures/level-background/menu.png");
+	main_menu_logo = LoadTexture("Textures/UI/logo.png");
+
+	// load font
+	customFont = LoadFont("Textures/texts/font/font.png");
+	customFont = LoadFontEx("Textures/texts/font/font.png", 8, 0, 42);
+	SetTextLineSpacing(16);
 
 }
 void UpdateGame() {
-	if (!gameOver && !victory) {
+	if (main_menu == true) {
+		if (IsKeyPressed(KEY_ENTER)) {
+			main_menu = false;
+		}
+	}
+
+	else if (!gameOver && !victory && main_menu != true) {
 
 		if (IsKeyPressed('P')) { pause = !pause; }
 		if (!pause) {
@@ -307,6 +325,7 @@ void UpdateGame() {
 			InitGame();
 			gameOver = false;
 			victory = false;
+			main_menu = true;
 		}
 	}
 }
@@ -315,11 +334,13 @@ void DrawGame() {
 	BeginDrawing();
 	ClearBackground(WHITE);
 
-	//draw background 
-
+	//draw main menu
 	float scaleX = (float)screenWidth / background.width;
 	float scaleY = (float)screenHeight / background.height;
-	DrawTextureEx(background, { 0, 0 }, 0.0f, (scaleX, scaleY), WHITE);
+	DrawTextureEx(main_menu_background, { 0, 0 }, 0.0f, (scaleX, scaleY), WHITE);
+	DrawTextureEx(main_menu_logo, { screenWidth / 10, screenHeight / 10 }, 0.0f, (scaleX / 1.425, scaleY / 1.425), WHITE);
+	//DrawText("TO START PRESS [ENTER]!", (screenWidth / 2 - MeasureText("TO START PRESS [ENTER]!", 20) / 2) + 15, screenHeight / 2 - 50, 20, BLUE);
+	DrawTextEx(customFont, main_menu_text_start,{ screenWidth / 2, screenHeight / 2 },customFont.baseSize, 2, BLACK);
 
 	//draw score
 	DrawText("1UP ", 50, 55, 30, YELLOW);
@@ -328,66 +349,77 @@ void DrawGame() {
 	DrawText("HIGH SCORE ", 340, 55, 30, RED);
 	DrawText(TextFormat("%04i ", highscore), 400, 80, 30, WHITE);
 
-	//draw Player
+	if (main_menu != true) { 
+		//draw background 
+		DrawTextureEx(background, { 0, 0 }, 0.0f, (scaleX, scaleY), WHITE); 
 
-	DrawTextureEx(player_sprite, { player.rec.x, player.rec.y }, 0.0f, (player.rec.width / player_sprite.width, player.rec.height / player_sprite.height), WHITE);
+		//draw score
+		DrawText("1UP ", 50, 55, 30, YELLOW);
+		DrawText(TextFormat("%04i ", score), 50, 80, 30, WHITE);
 
-	if (!gameOver && !victory) {
-		/*DrawRectangleRec(player.rec, player.color);*/
+		DrawText("HIGH SCORE ", 340, 55, 30, RED);
+		DrawText(TextFormat("%04i ", highscore), 400, 80, 30, WHITE);
 
-		//draw Enemies
+		//draw Player
 
-		for (int i = 0; i < activeEnemies; i++) {
-			if (enemy[i].active) {
-				/*DrawRectangleRec(enemy[i].rec, enemy[i].color);*/
-				DrawTextureEx(zako_enemy_sprite, { enemy[i].rec.x, enemy[i].rec.y }, 0.0f, (enemy[i].rec.width / zako_enemy_sprite.width, enemy[i].rec.height / ((zako_enemy_sprite.height) / 2)), WHITE);
+		DrawTextureEx(player_sprite, { player.rec.x, player.rec.y }, 0.0f, (player.rec.width / player_sprite.width, player.rec.height / player_sprite.height), WHITE);
+
+		if (!gameOver && !victory) {
+			/*DrawRectangleRec(player.rec, player.color);*/
+
+			//draw Enemies
+
+			for (int i = 0; i < activeEnemies; i++) {
+				if (enemy[i].active) {
+					/*DrawRectangleRec(enemy[i].rec, enemy[i].color);*/
+					DrawTextureEx(zako_enemy_sprite, { enemy[i].rec.x, enemy[i].rec.y }, 0.0f, (enemy[i].rec.width / zako_enemy_sprite.width, enemy[i].rec.height / ((zako_enemy_sprite.height) / 2)), WHITE);
+				}
+
 			}
 
-		}
+			//draw Shoots
 
-		//draw Shoots
+			for (int i = 0; i < NUM_SHOOTS; i++) {
+				if (shoot[i].active) {
 
-		for (int i = 0; i < NUM_SHOOTS; i++) {
-			if (shoot[i].active) {
+					DrawTextureEx(shoot_sprite, { (shoot[i].rec.x) - 15, (shoot[i].rec.y) - 20 }, 0.0f, ((shoot[i].rec.width / shoot_sprite.width) * 4, (shoot[i].rec.height * 2 / shoot_sprite.height) * 4), WHITE);
 
-				DrawTextureEx(shoot_sprite, { (shoot[i].rec.x) - 15, (shoot[i].rec.y) - 20 }, 0.0f, ((shoot[i].rec.width / shoot_sprite.width) * 4, (shoot[i].rec.height * 2 / shoot_sprite.height) * 4), WHITE);
-
-				/*DrawRectangleRec(shoot[i].rec, shoot[i].color);*/
+					/*DrawRectangleRec(shoot[i].rec, shoot[i].color);*/
+				}
 			}
-		}
 
-		//draw enemy shoots
+			//draw enemy shoots
 
-		for (int i = 0; i < NUM_ENEMY_SHOOTS; i++) {
-			if (e_shoot[i].active) {
-				DrawRectangleRec(e_shoot[i].rec, e_shoot[i].color);
+			for (int i = 0; i < NUM_ENEMY_SHOOTS; i++) {
+				if (e_shoot[i].active) {
+					DrawRectangleRec(e_shoot[i].rec, e_shoot[i].color);
+				}
 			}
+
+
+
+			// draw life
+
+			DrawTextureEx(player_sprite, { 55,990 }, 0.0f, (player.rec.width / player_sprite.width, player.rec.height / player_sprite.height), WHITE);
+			DrawTextureEx(player_sprite, { 0,990 }, 0.0f, (player.rec.width / player_sprite.width, player.rec.height / player_sprite.height), WHITE);
+
+			// draw level indicator
+
+			DrawTextureEx(level_sprite, { 800,1000 }, 0.0f, (50 / level_sprite.width, 55 / level_sprite.height), WHITE);
+
+			// pause 
+
+			if (pause) DrawText("GAME PAUSED", screenWidth / 2 - MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, RED);
 		}
-
-
-
-		// draw life
-
-		DrawTextureEx(player_sprite, { 55,990 }, 0.0f, (player.rec.width / player_sprite.width, player.rec.height / player_sprite.height), WHITE);
-		DrawTextureEx(player_sprite, { 0,990 }, 0.0f, (player.rec.width / player_sprite.width, player.rec.height / player_sprite.height), WHITE);
-
-		// draw level indicator
-
-		DrawTextureEx(level_sprite, { 800,1000 }, 0.0f, (50 / level_sprite.width, 55 / level_sprite.height), WHITE);
-
-		// pause 
-
-		if (pause) DrawText("GAME PAUSED", screenWidth / 2 - MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, RED);
+		else if (victory) {
+			DrawTextureEx(win_screen, { 0, 0 }, 0.0f, (scaleX, scaleY), WHITE);
+			DrawText("PRESS [ENTER] TO PLAY AGAIN", (screenWidth / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN WIN", 20) / 2) + 15, screenHeight - 100, 20, RED);
+		}
+		else {
+			DrawText("GAME OVER", screenWidth / 2 - MeasureText("GAME OVER", 40) / 2, 430, 40, RED);
+			DrawText("PRESS [ENTER] TO PLAY AGAIN", (screenWidth / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN WIN", 20) / 2) + 15, screenHeight / 2 - 50, 20, RED);
+		}
 	}
-	else if (victory) {
-		DrawTextureEx(win_screen, { 0, 0 }, 0.0f, (scaleX, scaleY), WHITE);
-		DrawText("PRESS [ENTER] TO PLAY AGAIN", (screenWidth / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN WIN", 20) / 2) + 15, screenHeight - 100, 20, RED);
-	}
-	else {
-		DrawText("GAME OVER", screenWidth / 2 - MeasureText("GAME OVER", 40) / 2, 430, 40, RED);
-		DrawText("PRESS [ENTER] TO PLAY AGAIN", (screenWidth / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN WIN", 20) / 2) + 15, screenHeight / 2 - 50, 20, RED);
-	}
-
 
 
 
@@ -400,6 +432,10 @@ void UnloadGame() {
 	UnloadTexture(level_sprite);
 	UnloadTexture(win_screen);
 	UnloadTexture(zako_enemy_sprite);
+	UnloadTexture(main_menu_background);
+	UnloadTexture(main_menu_logo);
+
+	UnloadFont(customFont);
 }
 void UpdateDrawFrame() {
 	UpdateGame();
