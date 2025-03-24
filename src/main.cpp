@@ -371,7 +371,7 @@ void DrawGame() {
 	DrawTextureEx(main_menu_background, { 0, 0 }, 0.0f, (scaleX, scaleY), WHITE);
 	DrawTextureEx(main_menu_logo, { screenWidth / 10, screenHeight / 10 }, 0.0f, (scaleX / 1.425, scaleY / 1.425), WHITE);
 
-	//DrawText("TO START PRESS [ENTER]!", (screenWidth / 2 - MeasureText("TO START PRESS [ENTER]!", 20) / 2) + 15, screenHeight / 2 - 50, 20, GREEN);
+	DrawText("TO START PRESS [ENTER]!", (screenWidth / 2 - MeasureText("TO START PRESS [ENTER]!", 20) / 2) + 15, screenHeight / 2 - 50, 20, GREEN);
 
 	if(parpadeo >= 0 && parpadeo <= 40){ DrawText("INSERT  COIN", screenWidth / 2 - 120, screenHeight / 2, 30, GREEN); }
 	
