@@ -11,6 +11,13 @@ using namespace std;
 #define NUM_SHOOTS 50
 #define NUM_ENEMY_SHOOTS 50
 
+#define FIRST_wave 2
+#define SECOND_wave 4
+#define THIRD_wave 6
+#define FOURTH_wave 8
+
+enum {FIRST = 0, SECOND, THIRD, FOURTH } EnemyWave;
+
 
 // structs
 
@@ -101,7 +108,7 @@ void InitGame() {
 	victory = false;
 	score = 0;
 	highscore = 0;
-	activeEnemies = 10;
+	activeEnemies = FIRST_wave;
 	enemieskill = 0;
 	shootRate = 0;
     shootRate2 = 0;
@@ -174,6 +181,48 @@ void UpdateGame() {
 
 		if (IsKeyPressed('P')) { pause = !pause; }
 		if (!pause) {
+
+			//waves
+			switch (EnemyWave) {
+			case FIRST:
+			{
+				if (enemieskill == activeEnemies) {
+					enemieskill = 0;
+
+				}
+				activeEnemies = SECOND_wave;
+				EnemyWave = SECOND;
+			}break;
+			case SECOND:
+			{
+				if (enemieskill == activeEnemies) {
+					enemieskill = 0;
+
+				}
+				activeEnemies = THIRD_wave;
+				EnemyWave = THIRD;
+			}break;
+			case THIRD:
+			{
+				if (enemieskill == activeEnemies) {
+					enemieskill = 0;
+
+				}
+				activeEnemies = FOURTH_wave;
+				EnemyWave = FOURTH;
+			}break;
+			case FOURTH:
+			{
+				if (enemieskill == activeEnemies) {
+					victory = true;
+
+				}
+			}break;
+			defualt: break;
+			}
+			
+
+
 
 			//Player movement
 
@@ -296,9 +345,9 @@ void UpdateGame() {
 
 			//victory condition
 
-			if (score == 1000) {
+			/*if (score == 1000) {
 				victory = true;
-			}
+			}*/
 
 		}
 	}
