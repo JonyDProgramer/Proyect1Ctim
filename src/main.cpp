@@ -11,7 +11,6 @@ using namespace std;
 #define NUM_SHOOTS 50
 #define NUM_ENEMY_SHOOTS 50
 
-
 // structs
 
 struct Player {
@@ -86,10 +85,13 @@ Texture2D player_sprite;
 Texture2D shoot_sprite;
 Texture2D level_sprite;
 Texture2D zako_enemy_sprite;
+Texture2D zako1, zako2;
+
 Texture2D win_screen;
 Texture2D main_menu_background;
 Texture2D main_menu_logo;
-Texture2D zako1, zako2;
+Texture2D main_menu_namco;
+Texture2D main_menu_enemy;
 
 Font customFont;
 
@@ -187,9 +189,12 @@ void InitGame() {
 	zako_enemy_sprite = LoadTexture("Textures/entities/enemies/zako_dim1.png");
 	zako1 = LoadTexture("Textures/entities/enemies/zako_dim1_1.png");
 	zako2 = LoadTexture("Textures/entities/enemies/zako_dim1_2.png");
+
 	win_screen = LoadTexture("Textures/UI/win_condition.png");
 	main_menu_background = LoadTexture("Textures/level-background/menu.png");
 	main_menu_logo = LoadTexture("Textures/UI/logo.png");
+	main_menu_namco = LoadTexture("Textures/texts/logo_namco.png");
+	main_menu_enemy = LoadTexture("Textures/UI/enemy_title_screen.png");
 
 	// load font
 	customFont = LoadFont("Textures/texts/font/font.png");
@@ -374,7 +379,10 @@ void DrawGame() {
 	DrawText("TO START PRESS [ENTER]!", (screenWidth / 2 - MeasureText("TO START PRESS [ENTER]!", 20) / 2) + 15, screenHeight / 2 - 50, 20, GREEN);
 
 	if(parpadeo >= 0 && parpadeo <= 40){ DrawText("INSERT  COIN", screenWidth / 2 - 120, screenHeight / 2, 30, GREEN); }
-	
+
+	DrawText("© 1981 1987 NAMCO", 270, 820, 30, WHITE);
+	DrawText("ALL RIGHTS RESERVED", 230, 860, 30, WHITE);
+	DrawTextureEx(main_menu_namco, { 277, 960 }, 0.0f, (main_menu_namco.width / 32, main_menu_namco.height / 32), WHITE);
 
 	//DrawTextEx(customFont, main_menu_text_start,{ screenWidth / 2, screenHeight / 2 },customFont.baseSize, 2, BLACK);
 
@@ -480,6 +488,8 @@ void UnloadGame() {
 	UnloadTexture(zako2);
 	UnloadTexture(main_menu_background);
 	UnloadTexture(main_menu_logo);
+	UnloadTexture(main_menu_namco);
+	UnloadTexture(main_menu_enemy);
 
 	UnloadFont(customFont);
 }
