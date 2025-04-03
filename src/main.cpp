@@ -95,12 +95,19 @@ Texture2D main_menu_enemy;
 
 Font customFont;
 
+Sound fighter_shoot;
+Sound fighter_killed;
+Sound enemy_shoot;
+Sound enemy_killed;
+
 int main() {
 
 	InitWindow(screenWidth, screenHeight, "Galaga88");
+	InitAudioDevice();
 	InitGame();
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) { UpdateDrawFrame(); }
+	CloseAudioDevice();
 	UnloadGame();
 	CloseWindow();
 	return 0;
@@ -201,6 +208,12 @@ void InitGame() {
 	customFont = LoadFontEx("Textures/texts/font/font.png", 8, 0, 42);
 	SetTextLineSpacing(16);
 
+	// load sounds
+	fighter_shoot = LoadSound("resources/audio/sfx/fighter_shoot.wav");
+	fighter_killed = LoadSound("resources/audio/sfx/fighter_destroyed.wav");
+	enemy_shoot = LoadSound("resources/audio/sfx/galaga_shot.wav");
+	enemy_killed = LoadSound("resources/audio/sfx/galaga_destroyed.wav");
+
 }
 void UpdateGame() {
 	if (main_menu == true) {
@@ -241,6 +254,7 @@ void UpdateGame() {
 						shoot[i].rec.x = (player.rec.x + player.rec.width / 2) - 3;
 						shoot[i].rec.y = player.rec.y;
 						shoot[i].active = true;
+						PlaySound(fighter_shoot);
 						break;
 					}
 				}
@@ -261,6 +275,7 @@ void UpdateGame() {
 							shoot[i].active = false;
 							enemy[j].active = false;
 							enemieskill++;
+							PlaySound(enemy_killed);
 							score += 100;
 						}
 					}
@@ -320,6 +335,7 @@ void UpdateGame() {
 							e_shoot[i].rec.x = enemy[i].rec.x + enemy[i].rec.width / 2 + 12;
 							e_shoot[i].rec.y = enemy[i].rec.y + enemy[i].rec.height + 20;
 							e_shoot[i].active = true;
+							PlaySound(enemy_shoot);
 							break;
 						}
 					}
@@ -336,6 +352,7 @@ void UpdateGame() {
 				//collision with player
 
 				if (CheckCollisionRecs(e_shoot[i].rec, player.rec)) {
+					PlaySound(fighter_killed);
 					e_shoot[i].active = false;
 					gameOver = true;
 				}
@@ -492,6 +509,11 @@ void UnloadGame() {
 	UnloadTexture(main_menu_enemy);
 
 	UnloadFont(customFont);
+
+	UnloadSound(fighter_shoot);
+	UnloadSound(fighter_killed);
+	UnloadSound(enemy_shoot);
+	UnloadSound(enemy_killed);
 }
 void UpdateDrawFrame() {
 	UpdateGame();
