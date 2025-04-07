@@ -226,8 +226,8 @@ void UpdateGame() {
 
 		UpdateMusicStream(main_menu_music);
 
-		if (IsMusicStreamPlaying(main_menu_music)) PauseMusicStream(main_menu_music);
-		else ResumeMusicStream(main_menu_music);
+		/*if (IsMusicStreamPlaying(main_menu_music)) PauseMusicStream(main_menu_music);
+		else ResumeMusicStream(main_menu_music);*/
 
 		parpadeo++;
 		if (parpadeo >= 90) {
