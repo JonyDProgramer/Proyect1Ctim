@@ -100,6 +100,8 @@ Sound fighter_killed;
 Sound enemy_shoot;
 Sound enemy_killed;
 
+Music main_menu_music;
+
 int main() {
 
 	InitWindow(screenWidth, screenHeight, "Galaga88");
@@ -214,9 +216,18 @@ void InitGame() {
 	enemy_shoot = LoadSound("resources/audio/sfx/galaga_shot.wav");
 	enemy_killed = LoadSound("resources/audio/sfx/galaga_destroyed.wav");
 
+	// load music
+
+	main_menu_music = LoadMusicStream("resources/audio/music/02_game_start.wav");
+	PlayMusicStream(main_menu_music);
 }
 void UpdateGame() {
 	if (main_menu == true) {
+
+		UpdateMusicStream(main_menu_music);
+
+		if (IsMusicStreamPlaying(main_menu_music)) PauseMusicStream(main_menu_music);
+		else ResumeMusicStream(main_menu_music);
 
 		parpadeo++;
 		if (parpadeo >= 90) {
@@ -514,6 +525,8 @@ void UnloadGame() {
 	UnloadSound(fighter_killed);
 	UnloadSound(enemy_shoot);
 	UnloadSound(enemy_killed);
+
+	UnloadMusicStream(main_menu_music);
 }
 void UpdateDrawFrame() {
 	UpdateGame();
