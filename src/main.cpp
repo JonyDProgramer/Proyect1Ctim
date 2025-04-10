@@ -59,6 +59,7 @@ bool gameOver = false;
 bool pause = false;
 bool victory = false;
 bool main_menu = true;
+bool credits = false;
 
 int score = 0;
 int highscore = 0;
@@ -93,6 +94,7 @@ Texture2D main_menu_background;
 Texture2D main_menu_logo;
 Texture2D main_menu_namco;
 Texture2D main_menu_enemy;
+Texture2D credits_screen;
 
 Font customFont;
 
@@ -126,6 +128,7 @@ void InitGame() {
 	gameOver = false;
 	victory = false;
 	main_menu = true;
+	credits = false;
 	score = 0;
 	highscore = 0;
 	activeEnemies = 10;
@@ -207,6 +210,7 @@ void InitGame() {
 	main_menu_logo = LoadTexture("Textures/UI/logo.png");
 	main_menu_namco = LoadTexture("Textures/texts/logo_namco.png");
 	main_menu_enemy = LoadTexture("Textures/UI/enemy_title_screen.png");
+	credits_screen = LoadTexture("Textures/UI/credits.png");
 
 	// load font
 	customFont = LoadFont("Textures/texts/font/font.png");
@@ -239,10 +243,18 @@ void UpdateGame() {
 
 		if (IsKeyPressed(KEY_ENTER)) {
 			main_menu = false;
+			credits = true;
 		}
 	}
-
-	else if (!gameOver && !victory && main_menu != true) {
+	
+	else if (credits == true) {
+		main_menu = false;
+		if (IsKeyPressed(KEY_ENTER)) {
+			credits = false;
+		}
+	}
+	
+	else if (!gameOver && !victory && main_menu != true && credits != true) {
 
 		StopMusicStream(main_menu_music);
 
@@ -444,7 +456,12 @@ void DrawGame() {
 	DrawText("HIGH SCORE ", 340, 55, 30, RED);
 	DrawText(TextFormat("%04i ", highscore), 400, 80, 30, WHITE);
 
-	if (main_menu != true) { 
+	if (credits == true) {
+		DrawTextureEx(credits_screen, { 0, 0 }, 0.0f, (scaleX, scaleY), WHITE);
+		DrawText("PRESS [ENTER] TO CONTINUE!", (screenWidth / 2 - MeasureText("PRESS [ENTER] TO CONTINUE!", 20) / 2) + 15, screenHeight / 4 - 50, 20, GREEN);
+	}
+
+	if (main_menu != true && credits != true) { 
 		//draw background 
 		DrawTextureEx(background, { 0, 0 }, 0.0f, (scaleX, scaleY), WHITE); 
 
@@ -541,6 +558,7 @@ void UnloadGame() {
 	UnloadTexture(main_menu_logo);
 	UnloadTexture(main_menu_namco);
 	UnloadTexture(main_menu_enemy);
+	UnloadTexture(credits_screen);
 
 	UnloadFont(customFont);
 
