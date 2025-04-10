@@ -66,6 +66,7 @@ int shootRate = 0;
 int shootRate2 = 0;
 int activeEnemies = 0;
 int enemieskill = 0;
+int currentMusic = 0;
 
 const char* main_menu_text_start = "TO START PRESS < ENTER >!";
 
@@ -101,6 +102,8 @@ Sound enemy_shoot;
 Sound enemy_killed;
 
 Music main_menu_music;
+Music game_over_music;
+Music victory_music;
 
 int main() {
 
@@ -220,14 +223,14 @@ void InitGame() {
 
 	main_menu_music = LoadMusicStream("resources/audio/music/02_game_start.wav");
 	PlayMusicStream(main_menu_music);
+	game_over_music = LoadMusicStream("resources/audio/music/13_game_over.wav");
+	victory_music = LoadMusicStream("resources/audio/music/12_ending.wav");
+
 }
 void UpdateGame() {
 	if (main_menu == true) {
 
 		UpdateMusicStream(main_menu_music);
-
-		/*if (IsMusicStreamPlaying(main_menu_music)) PauseMusicStream(main_menu_music);
-		else ResumeMusicStream(main_menu_music);*/
 
 		parpadeo++;
 		if (parpadeo >= 90) {
@@ -240,6 +243,8 @@ void UpdateGame() {
 	}
 
 	else if (!gameOver && !victory && main_menu != true) {
+
+		StopMusicStream(main_menu_music);
 
 		if (IsKeyPressed('P')) { pause = !pause; }
 		if (!pause) {
@@ -366,6 +371,8 @@ void UpdateGame() {
 					PlaySound(fighter_killed);
 					e_shoot[i].active = false;
 					gameOver = true;
+					currentMusic = 1;
+					PlayMusicStream(game_over_music);
 				}
 
 				//shoot out of the screen
@@ -380,6 +387,8 @@ void UpdateGame() {
 
 			if (score == 1000) {
 				victory = true;
+				PlayMusicStream(victory_music);
+				currentMusic = 1;
 			}
 
 		}
@@ -392,6 +401,20 @@ void UpdateGame() {
 			main_menu = true;
 		}
 	}
+
+	if (currentMusic == 1) {
+		if (victory == true) {
+			UpdateMusicStream(victory_music);
+		}
+		else if (gameOver == true) {
+			UpdateMusicStream(game_over_music);
+		}
+	}
+	else if (IsMusicStreamPlaying(victory_music) == 1 && currentMusic != 1 || IsMusicStreamPlaying(game_over_music) == 1 && currentMusic != 1) {
+		StopMusicStream(victory_music);
+		StopMusicStream(game_over_music);
+	}
+
 }
 void DrawGame() {
 
@@ -527,6 +550,8 @@ void UnloadGame() {
 	UnloadSound(enemy_killed);
 
 	UnloadMusicStream(main_menu_music);
+	UnloadMusicStream(game_over_music);
+	UnloadMusicStream(victory_music);
 }
 void UpdateDrawFrame() {
 	UpdateGame();
