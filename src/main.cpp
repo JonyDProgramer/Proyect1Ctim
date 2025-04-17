@@ -62,7 +62,7 @@ bool main_menu = true;
 bool credits = false;
 
 int score = 0;
-int highscore = 0;
+int highscore;
 int shootRate = 0;
 int shootRate2 = 0;
 int activeEnemies = 0;
@@ -130,7 +130,7 @@ void InitGame() {
 	main_menu = true;
 	credits = false;
 	score = 0;
-	highscore = 0;
+	highscore;
 	activeEnemies = 10;
 	enemieskill = 0;
 	shootRate = 0;
@@ -305,6 +305,11 @@ void UpdateGame() {
 							enemieskill++;
 							PlaySound(enemy_killed);
 							score += 100;
+
+							// high score
+							if (score > highscore) {
+								highscore = score;
+							}
 						}
 					}
 				}
@@ -319,9 +324,6 @@ void UpdateGame() {
 
 			//Enemy IA
 			// 1 = right && 0 = left.
-
-
-
 			for (int i = 0; i < activeEnemies; i++) {
 				if (enemy[i].active) {
 					if (enemy[i].move == 1) {
