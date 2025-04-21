@@ -197,24 +197,24 @@ void InitGame() {
 
 
 	// load textures 
-	background = LoadTexture("Textures/level-background/stage1.png");
-	player_sprite = LoadTexture("Textures/entities/player/Fighter.png");
-	shoot_sprite = LoadTexture("Textures/entities/enemies/projectiles/disparoPlayer.png");
-	level_sprite = LoadTexture("Textures/items/stage_indicator.png");
-	zako_enemy_sprite = LoadTexture("Textures/entities/enemies/zako_dim1.png");
-	zako1 = LoadTexture("Textures/entities/enemies/zako_dim1_1.png");
-	zako2 = LoadTexture("Textures/entities/enemies/zako_dim1_2.png");
+	background = LoadTexture("resources/Textures/level-background/stage1.png");
+	player_sprite = LoadTexture("resources/Textures/entities/player/fighter.png");
+	shoot_sprite = LoadTexture("resources/Textures/entities/enemies/projectiles/disparoplayer.png");
+	level_sprite = LoadTexture("resources/Textures/items/stage_indicator.png");
+	zako_enemy_sprite = LoadTexture("resources/Textures/entities/enemies/zako_dim1.png");
+	zako1 = LoadTexture("resources/Textures/entities/enemies/zako_dim1_1.png");
+	zako2 = LoadTexture("resources/Textures/entities/enemies/zako_dim1_2.png");
 
-	win_screen = LoadTexture("Textures/UI/win_condition.png");
-	main_menu_background = LoadTexture("Textures/level-background/menu.png");
-	main_menu_logo = LoadTexture("Textures/UI/logo.png");
-	main_menu_namco = LoadTexture("Textures/texts/logo_namco.png");
-	main_menu_enemy = LoadTexture("Textures/UI/enemy_title_screen.png");
-	credits_screen = LoadTexture("Textures/UI/credits.png");
+	win_screen = LoadTexture("resources/Textures/UI/win_condition.png");
+	main_menu_background = LoadTexture("resources/Textures/level-background/menu.png");
+	main_menu_logo = LoadTexture("resources/Textures/UI/logo.png");
+	main_menu_namco = LoadTexture("resources/Textures/texts/logo_namco.png");
+	main_menu_enemy = LoadTexture("resources/Textures/UI/enemy_title_screen.png");
+	credits_screen = LoadTexture("resources/Textures/UI/credits.png");
 
 	// load font
-	customFont = LoadFont("Textures/texts/font/font.png");
-	customFont = LoadFontEx("Textures/texts/font/font.png", 8, 0, 42);
+	customFont = LoadFont("resources/Textures/texts/font/font.png");
+	customFont = LoadFontEx("resources/Textures/texts/font/font.png", 8, 0, 42);
 	SetTextLineSpacing(16);
 
 	// load sounds
@@ -224,7 +224,6 @@ void InitGame() {
 	enemy_killed = LoadSound("resources/audio/sfx/galaga_destroyed.wav");
 
 	// load music
-
 	main_menu_music = LoadMusicStream("resources/audio/music/02_game_start.wav");
 	PlayMusicStream(main_menu_music);
 	game_over_music = LoadMusicStream("resources/audio/music/13_game_over.wav");
