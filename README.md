@@ -20,6 +20,7 @@ Quit the game with `ESC`.
 https://github.com/JonyDProgramer/Proyect1Ctim
 
 ## 1 min Video Gameplay
+https://drive.google.com/file/d/191MitnHw2ltMA8Axo-wNF8AAjvqScqS4/view?usp=drive_link
 
 ### List of implemented features
 1. Player movement and collision.
