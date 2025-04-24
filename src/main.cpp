@@ -86,6 +86,7 @@ Texture2D shoot_sprite;
 Texture2D level_sprite;
 Texture2D zako_enemy_sprite;
 Texture2D zako1, zako2;
+Texture2D enemy_explosion;
 
 Texture2D win_screen;
 Texture2D main_menu_background;
@@ -202,6 +203,7 @@ void InitGame() {
 	zako_enemy_sprite = LoadTexture("resources/Textures/entities/enemies/zako_dim1.png");
 	zako1 = LoadTexture("resources/Textures/entities/enemies/zako_dim1_1.png");
 	zako2 = LoadTexture("resources/Textures/entities/enemies/zako_dim1_2.png");
+	enemy_explosion = LoadTexture("resources/Textures/entities/player/explosion.png");
 
 	win_screen = LoadTexture("resources/Textures/UI/win_condition.png");
 	main_menu_background = LoadTexture("resources/Textures/level-background/menu.png");
